@@ -1,388 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Timesheet Merger</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-    <style>
-        :root {
-            --bg: #f6f7f9;
-            --card: #fff;
-            --tx: #16181d;
-            --mu: #667085;
-            --bd: #e2e5ea;
-            --ac: #1f6feb;
-            --ac2: #fff;
-            --ok: #117a43;
-            --er: #b42318;
-            box-sizing: border-box;
-            padding-top: env(safe-area-inset-top, 0px);
-            padding-bottom: env(safe-area-inset-bottom, 0px)
-        }
-
-        @media (prefers-color-scheme:dark) {
-            :root:not([data-theme="light"]) {
-                --bg: #13151a;
-                --card: #1b1e25;
-                --tx: #eceef2;
-                --mu: #9aa3b2;
-                --bd: #2c313b;
-                --ac: #4c8dff;
-                --ac2: #0b0d11;
-                --ok: #4cc38a;
-                --er: #ff7b72
-            }
-        }
-
-        :root[data-theme="dark"] {
-            --bg: #13151a;
-            --card: #1b1e25;
-            --tx: #eceef2;
-            --mu: #9aa3b2;
-            --bd: #2c313b;
-            --ac: #4c8dff;
-            --ac2: #0b0d11;
-            --ok: #4cc38a;
-            --er: #ff7b72
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--tx);
-            font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif
-        }
-
-        main {
-            max-width: 940px;
-            margin: 0 auto;
-            padding: 24px 16px 48px
-        }
-
-        h1 {
-            font-size: 24px;
-            margin: 0 0 4px
-        }
-
-        .sub {
-            color: var(--mu);
-            margin: 0 0 20px
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px
-        }
-
-        @media(max-width:700px) {
-            .grid {
-                grid-template-columns: 1fr
-            }
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--bd);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px
-        }
-
-        .card h2 {
-            font-size: 16px;
-            margin: 0 0 4px
-        }
-
-        .hint {
-            color: var(--mu);
-            font-size: 13px;
-            margin: 0 0 12px
-        }
-
-        .drop {
-            display: block;
-            border: 2px dashed var(--bd);
-            border-radius: 10px;
-            padding: 18px;
-            text-align: center;
-            cursor: pointer;
-            color: var(--mu)
-        }
-
-        .drop.has {
-            border-style: solid;
-            color: var(--tx)
-        }
-
-        .drop input {
-            display: none
-        }
-
-        label.l {
-            display: block;
-            font-size: 13px;
-            color: var(--mu);
-            margin: 12px 0 4px
-        }
-
-        select,
-        input[type=text] {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--bd);
-            border-radius: 8px;
-            background: var(--bg);
-            color: var(--tx);
-            font: inherit
-        }
-
-        .two {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px
-        }
-
-        button {
-            background: var(--ac);
-            color: var(--ac2);
-            border: 0;
-            border-radius: 8px;
-            padding: 10px 18px;
-            font: inherit;
-            font-weight: 600;
-            cursor: pointer
-        }
-
-        button:disabled {
-            opacity: .4;
-            cursor: not-allowed
-        }
-
-        button.sec {
-            background: transparent;
-            color: var(--ac);
-            border: 1px solid var(--ac)
-        }
-
-        .row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap
-        }
-
-        .msg {
-            margin-top: 12px;
-            font-size: 14px
-        }
-
-        .ok {
-            color: var(--ok)
-        }
-
-        .er {
-            color: var(--er)
-        }
-
-        .tw {
-            overflow-x: auto;
-            border: 1px solid var(--bd);
-            border-radius: 8px;
-            margin-top: 12px;
-            max-height: 380px
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            font-size: 13px
-        }
-
-        th,
-        td {
-            padding: 6px 10px;
-            border-bottom: 1px solid var(--bd);
-            text-align: left;
-            white-space: nowrap
-        }
-
-        th {
-            position: sticky;
-            top: 0;
-            background: var(--card)
-        }
-
-        .hid {
-            display: none
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timesheet Merger</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#16181d;--mu:#667085;--bd:#e2e5ea;--ac:#1f6feb;--ac2:#fff;--ok:#117a43;--er:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151a;--card:#1b1e25;--tx:#eceef2;--mu:#9aa3b2;--bd:#2c313b;--ac:#4c8dff;--ac2:#0b0d11;--ok:#4cc38a;--er:#ff7b72}}
+:root[data-theme="dark"]{--bg:#13151a;--card:#1b1e25;--tx:#eceef2;--mu:#9aa3b2;--bd:#2c313b;--ac:#4c8dff;--ac2:#0b0d11;--ok:#4cc38a;--er:#ff7b72}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:940px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--mu);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h2{font-size:16px;margin:0 0 4px}.hint{color:var(--mu);font-size:13px;margin:0 0 12px}
+.drop{display:block;border:2px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;cursor:pointer;color:var(--mu)}
+.drop.has{border-style:solid;color:var(--tx)}.drop input{display:none}
+label.l{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
+select,input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{background:var(--ac);color:var(--ac2);border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}button.sec{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.msg{margin-top:12px;font-size:14px}.ok{color:var(--ok)}.er{color:var(--er)}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;margin-top:12px;max-height:380px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card)}.hid{display:none}
+</style>
 </head>
-
 <body>
-    <main>
-        <h1>Timesheet Merger</h1>
-        <p class="sub">Reads the monthly attendance sheet (days 1 to 31 with hours, A and OFF) and fills Absent, Over
-            Time, Work Days and Remarks in the target timesheet, matching by Iqama number. The target keeps its
-            formatting.</p>
-        <div class="grid">
-            <div class="card">
-                <h2>1. Source sheet</h2>
-                <p class="hint">Attendance sheet with the dates across the top.</p>
-                <label class="drop" id="dropS"><input type="file" id="fS" accept=".xlsx"><span>Click to choose the
-                        source file</span></label>
-                <div id="cfgS" class="hid">
-                    <div class="two">
-                        <div><label class="l">Month (as shown in remarks)</label><input type="text" id="mon"></div>
-                        <div><label class="l">Year</label><input type="text" id="yr"></div>
-                    </div>
-                    <div class="two">
-                        <div><label class="l">Absent code</label><input type="text" id="acode" value="A"></div>
-                        <div><label class="l">Normal duty hours</label><input type="text" id="std" value="8"></div>
-                    </div>
-                    <p class="hint" id="infoS" style="margin-top:12px"></p>
-                </div>
-            </div>
-            <div class="card">
-                <h2>2. Target sheet</h2>
-                <p class="hint">Timesheet to be filled.</p>
-                <label class="drop" id="dropT"><input type="file" id="fT" accept=".xlsx"><span>Click to choose the
-                        target file</span></label>
-                <div id="cfgT" class="hid">
-                    <label class="l">Iqama column</label><select id="iqT"></select>
-                    <label class="l">Absent (total days) column</label><select id="abT"></select>
-                    <label class="l">Over time column</label><select id="otT"></select>
-                    <label class="l">Work days column (existing value minus absent days)</label><select
-                        id="wdT"></select>
-                    <label class="l">Remarks column</label><select id="rmT"></select>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="row"><button id="go" disabled>Match &amp; fill</button><button id="dl" class="sec hid">Download
-                    filled target sheet</button></div>
-            <div id="msg" class="msg"></div>
-            <div id="prev" class="tw hid"></div>
-        </div>
-        <p class="hint">Everything runs in your browser. Your files are never uploaded. The first worksheet of each file
-            is used. Days with a number above the normal hours add the extra hours to overtime. Employees with no
-            absence or overtime are left untouched. People found only in the source are added to a new sheet in the
-            downloaded file.</p>
-    </main>
-    <script>
-        const $ = id => document.getElementById(id);
-        const S = { src: null, tgt: null, out: null };
-        const val = c => { let v = c.value; if (v && typeof v === 'object') { if ('result' in v) v = v.result; else if (v.richText) v = v.richText.map(t => t.text).join(''); else if (v.text) v = v.text } return v };
-        const txt = c => String(val(c) ?? '').trim();
-        const digits = v => { const s = String(v ?? '').replace(/\D/g, ''); return s.length >= 6 ? s : '' };
-        const colL = n => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26) } return s };
-        function findHeader(ws) {
-            for (let r = 1; r <= 12; r++) {
-                const row = ws.getRow(r); let c0 = 0;
-                row.eachCell({ includeEmpty: false }, (c, n) => { if (!c0 && /iqama/i.test(txt(c))) c0 = n });
-                if (c0) return { r, iq: c0 }
-            }
-            return null;
-        }
-        function fill(sel, ws, hr, re, none) {
-            sel.innerHTML = ''; if (none) sel.add(new Option('(do not fill)', 0));
-            let g = none ? 0 : 1;
-            for (let n = 1; n <= ws.columnCount; n++) {
-                const t = txt(ws.getRow(hr).getCell(n)); if (!t) continue;
-                sel.add(new Option(colL(n) + ': ' + t, n)); if (re.test(t) && g <= (none ? 0 : 1)) g = n
-            }
-            sel.value = g;
-        }
-        async function load(file, which) {
-            const k = which === 'src' ? 'S' : 'T';
-            try {
-                const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await file.arrayBuffer());
-                const ws = wb.worksheets[0], h = findHeader(ws);
-                if (!h) throw new Error('no iqama header');
-                S[which] = { wb, ws, h, name: file.name };
-                $('drop' + k).classList.add('has'); $('drop' + k).querySelector('span').textContent = file.name;
-                if (which === 'src') {
-                    const dates = []; ws.getRow(h.r).eachCell((c, n) => { const v = +val(c); if (Number.isInteger(v) && v >= 1 && v <= 31 && n > h.iq) dates.push({ n, d: v }) });
-                    S.src.dates = dates;
-                    let title = ''; for (let r = 1; r <= h.r; r++)ws.getRow(r).eachCell(c => { title += ' ' + txt(c) });
-                    const m = title.match(/jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i), y = title.match(/20\d\d/);
-                    $('mon').value = m ? m[0][0].toUpperCase() + m[0].slice(1).toLowerCase() : ''; $('yr').value = y ? y[0] : '';
-                    $('infoS').textContent = 'Found ' + dates.length + ' date columns (day ' + (dates[0]?.d) + ' to ' + (dates.at(-1)?.d) + ') and the Iqama column ' + colL(h.iq) + '.';
-                } else {
-                    fill($('iqT'), ws, h.r, /iqama/i); fill($('abT'), ws, h.r, /absent/i, true); fill($('otT'), ws, h.r, /over\s*-?time|\bot\b/i, true);
-                    fill($('wdT'), ws, h.r, /work\s*days/i, true); fill($('rmT'), ws, h.r, /remark/i, true);
-                }
-                $('cfg' + k).classList.remove('hid'); $('go').disabled = !(S.src && S.tgt); $('dl').classList.add('hid');
-            } catch (e) { $('msg').innerHTML = '<span class="er">Could not read ' + file.name + '. Please use an .xlsx file that has an Iqama column heading.</span>' }
-        }
-        $('fS').onchange = e => e.target.files[0] && load(e.target.files[0], 'src');
-        $('fT').onchange = e => e.target.files[0] && load(e.target.files[0], 'tgt');
+<main>
+<h1>Timesheet Merger</h1>
+<p class="sub">Reads the monthly attendance sheet (days 1 to 31 with hours, A and OFF) and fills Absent, Over Time, Work Days and Remarks in the target timesheet, matching by Iqama number. The target keeps its formatting.</p>
+<div class="grid">
+  <div class="card">
+    <h2>1. Source sheet</h2><p class="hint">Attendance sheet with the dates across the top.</p>
+    <label class="drop" id="dropS"><input type="file" id="fS" accept=".xlsx"><span>Click to choose the source file</span></label>
+    <div id="cfgS" class="hid">
+      <div class="two"><div><label class="l">Month (as shown in remarks)</label><input type="text" id="mon"></div><div><label class="l">Year</label><input type="text" id="yr"></div></div>
+      <div class="two"><div><label class="l">Absent code</label><input type="text" id="acode" value="A"></div><div><label class="l">Normal duty hours</label><input type="text" id="std" value="8"></div></div>
+      <p class="hint" id="infoS" style="margin-top:12px"></p>
+    </div>
+  </div>
+  <div class="card">
+    <h2>2. Target sheet</h2><p class="hint">Timesheet to be filled.</p>
+    <label class="drop" id="dropT"><input type="file" id="fT" accept=".xlsx"><span>Click to choose the target file</span></label>
+    <div id="cfgT" class="hid">
+      <label class="l">Iqama column</label><select id="iqT"></select>
+      <label class="l">Absent (total days) column</label><select id="abT"></select>
+      <label class="l">Over time column</label><select id="otT"></select>
+      <label class="l">Work days column (existing value minus absent days)</label><select id="wdT"></select>
+      <label class="l">Remarks column</label><select id="rmT"></select>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="row"><button id="go" disabled>Match &amp; fill</button><button id="dl" class="sec hid">Download filled target sheet</button></div>
+  <div id="msg" class="msg"></div><div id="prev" class="tw hid"></div>
+</div>
+<p class="hint">Everything runs in your browser. Your files are never uploaded. The first worksheet of each file is used. Days with a number above the normal hours add the extra hours to overtime. Employees with no absence or overtime are left untouched. People found only in the source are added to a new sheet in the downloaded file.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const S={src:null,tgt:null,edits:[],nit:[]};
+const val=c=>{let v=c.value;if(v&&typeof v==='object'){if('result' in v)v=v.result;else if(v.richText)v=v.richText.map(t=>t.text).join('');else if(v.text)v=v.text}return v};
+const txt=c=>String(val(c)??'').trim();
+const digits=v=>{const s=String(v??'').replace(/\D/g,'');return s.length>=6?s:''};
+const colL=n=>{let s='';while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s};
+const colN=L=>L.split('').reduce((a,ch)=>a*26+ch.charCodeAt(0)-64,0);
+const xesc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ---- file writing: patch the original .xlsx XML so nothing else in the file changes ---- */
+function cellXml(ref,s,v){
+  const st=s?' s="'+s+'"':'';
+  if(typeof v==='number')return '<c r="'+ref+'"'+st+'><v>'+v+'</v></c>';
+  return '<c r="'+ref+'"'+st+' t="inlineStr"><is><t xml:space="preserve">'+xesc(v)+'</t></is></c>';
+}
+function setCell(xml,r,col,v){
+  const rowRe=new RegExp('<row r="'+r+'"(?:\\s[^>]*[^/>])?>([\\s\\S]*?)</row>');
+  const m=xml.match(rowRe);if(!m)return xml;
+  let body=m[1];const ref=colL(col)+r;
+  const cRe=new RegExp('<c r="'+ref+'"([^>]*?)(?:/>|>[\\s\\S]*?</c>)');
+  const cm=body.match(cRe);
+  if(cm){const sm=cm[1].match(/\ss="(\d+)"/);body=body.replace(cRe,()=>cellXml(ref,sm?sm[1]:'',v))}
+  else{
+    let ins=false;
+    body=body.replace(/<c r="([A-Z]+)\d+"[^>]*?(?:\/>|>[\s\S]*?<\/c>)/g,(all,L2)=>{if(!ins&&colN(L2)>col){ins=true;return cellXml(ref,'',v)+all}return all});
+    if(!ins)body+=cellXml(ref,'',v);
+  }
+  const open=m[0].slice(0,m[0].length-m[1].length-6);
+  return xml.slice(0,m.index)+open+body+'</row>'+xml.slice(m.index+m[0].length);
+}
+async function buildWorkbook(buf,edits,nit,mon,yr){
+  const z=await JSZip.loadAsync(buf);
+  let wbx=await z.file('xl/workbook.xml').async('string');
+  let rels=await z.file('xl/_rels/workbook.xml.rels').async('string');
+  const rid=wbx.match(/<sheet\b[^>]*>/)[0].match(/r:id="([^"]+)"/)[1];
+  const tg=rels.match(new RegExp('<Relationship\\b[^>]*\\sId="'+rid+'"[^>]*>'))[0].match(/Target="([^"]+)"/)[1];
+  const path=tg.startsWith('/')?tg.slice(1):'xl/'+tg;
+  let sx=await z.file(path).async('string');
+  edits.forEach(e=>{sx=setCell(sx,e.r,e.col,e.v)});
+  z.file(path,sx);
+  if(nit.length){
+    const id=Math.max(0,...[...wbx.matchAll(/sheetId="(\d+)"/g)].map(m=>+m[1]))+1;
+    const head=['S.No','Name','Iqama','Position','Absent','Over Time','Remarks'],w=[7,34,16,28,10,12,44];
+    const rows=[head].concat(nit.map((e,i)=>[i+1,e.name,Number(e.key),e.pos,e.na||'',e.ot||'',e.na?'Absent on '+e.days+' '+mon+' '+yr:'']));
+    const sd=rows.map((r,i)=>'<row r="'+(i+1)+'">'+r.map((v,j)=>v===''?'':cellXml(colL(j+1)+(i+1),'',v)).join('')+'</row>').join('');
+    const cols='<cols>'+w.map((x,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+x+'" customWidth="1"/>').join('')+'</cols>';
+    z.file('xl/worksheets/sheet_nit.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+cols+'<sheetData>'+sd+'</sheetData></worksheet>');
+    wbx=wbx.replace('</sheets>','<sheet name="Not in Target" sheetId="'+id+'" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rIdNIT"/></sheets>');
+    rels=rels.replace('</Relationships>','<Relationship Id="rIdNIT" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet_nit.xml"/></Relationships>');
+    z.file('xl/_rels/workbook.xml.rels',rels);
+    let ct=await z.file('[Content_Types].xml').async('string');
+    ct=ct.replace('</Types>','<Override PartName="/xl/worksheets/sheet_nit.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>');
+    z.file('[Content_Types].xml',ct);
+  }
+  if(/<calcPr\b/.test(wbx)){if(!/fullCalcOnLoad/.test(wbx))wbx=wbx.replace(/<calcPr\b/,'<calcPr fullCalcOnLoad="1"')}
+  else wbx=wbx.replace('</workbook>','<calcPr fullCalcOnLoad="1"/></workbook>');
+  z.file('xl/workbook.xml',wbx);
+  return z.generateAsync({type:'arraybuffer',compression:'DEFLATE'});
+}
+function findHeader(ws){
+  for(let r=1;r<=12;r++){let c0=0;
+    ws.getRow(r).eachCell({includeEmpty:false},(c,n)=>{if(!c0&&/iqama/i.test(txt(c)))c0=n});
+    if(c0)return {r,iq:c0}}
+  return null;
+}
+function fill(sel,ws,hr,re,none){
+  sel.innerHTML='';if(none)sel.add(new Option('(do not fill)',0));
+  let g=none?0:1;
+  for(let n=1;n<=ws.columnCount;n++){const t=txt(ws.getRow(hr).getCell(n));if(!t)continue;
+    sel.add(new Option(colL(n)+': '+t,n));if(re.test(t)&&g<=(none?0:1))g=n}
+  sel.value=g;
+}
+async function load(file,which){
+  const k=which==='src'?'S':'T';
+  try{
+    const buf=await file.arrayBuffer();
+    const wb=new ExcelJS.Workbook();await wb.xlsx.load(buf.slice(0));
+    const ws=wb.worksheets[0],h=findHeader(ws);
+    if(!h)throw new Error('no iqama header');
+    S[which]={ws,h,buf,name:file.name};
+    $('drop'+k).classList.add('has');$('drop'+k).querySelector('span').textContent=file.name;
+    if(which==='src'){
+      const dates=[];ws.getRow(h.r).eachCell((c,n)=>{const v=+val(c);if(Number.isInteger(v)&&v>=1&&v<=31&&n>h.iq)dates.push({n,d:v})});
+      S.src.dates=dates;
+      let title='';for(let r=1;r<=h.r;r++)ws.getRow(r).eachCell(c=>{title+=' '+txt(c)});
+      const m=title.match(/jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i),y=title.match(/20\d\d/);
+      $('mon').value=m?m[0][0].toUpperCase()+m[0].slice(1).toLowerCase():'';$('yr').value=y?y[0]:'';
+      $('infoS').textContent='Found '+dates.length+' date columns (day '+(dates[0]?.d)+' to '+(dates.at(-1)?.d)+') and the Iqama column '+colL(h.iq)+'.';
+    }else{
+      fill($('iqT'),ws,h.r,/iqama/i);fill($('abT'),ws,h.r,/absent/i,true);fill($('otT'),ws,h.r,/over\s*-?time|\bot\b/i,true);
+      fill($('wdT'),ws,h.r,/work\s*days/i,true);fill($('rmT'),ws,h.r,/remark/i,true);
+    }
+    $('cfg'+k).classList.remove('hid');$('go').disabled=!(S.src&&S.tgt);$('dl').classList.add('hid');
+  }catch(e){$('msg').innerHTML='<span class="er">Could not read '+file.name+'. Please use an .xlsx file that has an Iqama column heading.</span>'}
+}
+$('fS').onchange=e=>e.target.files[0]&&load(e.target.files[0],'src');
+$('fT').onchange=e=>e.target.files[0]&&load(e.target.files[0],'tgt');
 
-        $('go').onclick = () => {
-            const { src, tgt } = S;
-            const code = $('acode').value.trim().toLowerCase(), std = parseFloat($('std').value) || 8, mon = $('mon').value.trim(), yr = $('yr').value.trim();
-            let nameCol = 0; src.ws.getRow(src.h.r).eachCell((c, n) => { if (!nameCol && /^name/i.test(txt(c))) nameCol = n });
-            let posCol = 0; src.ws.getRow(src.h.r).eachCell((c, n) => { if (!posCol && /^position/i.test(txt(c))) posCol = n });
-            const map = new Map();
-            for (let r = src.h.r + 1; r <= src.ws.rowCount; r++) {
-                const row = src.ws.getRow(r), key = digits(val(row.getCell(src.h.iq))); if (!key) continue;
-                const e = { abs: [], ot: 0, name: nameCol ? txt(row.getCell(nameCol)) : '', pos: posCol ? txt(row.getCell(posCol)) : '' };
-                src.dates.forEach(({ n, d }) => {
-                    const v = val(row.getCell(n)), s = String(v ?? '').trim().toLowerCase();
-                    if (s === code) e.abs.push(d);
-                    else { const x = typeof v === 'number' ? v : parseFloat(s); if (!isNaN(x) && x > std) e.ot += x - std }
-                });
-                map.set(key, e);
-            }
-            const c = { iq: +$('iqT').value, ab: +$('abT').value, ot: +$('otT').value, wd: +$('wdT').value, rm: +$('rmT').value };
-            const used = new Set(), rows = [], missing = [];
-            for (let r = tgt.h.r + 1; r <= tgt.ws.rowCount; r++) {
-                const row = tgt.ws.getRow(r), key = digits(val(row.getCell(c.iq))); if (!key) continue;
-                const e = map.get(key); if (!e) { missing.push(key); continue }
-                used.add(key);
-                const na = e.abs.length, ot = Math.round(e.ot * 100) / 100;
-                if (na) {
-                    if (c.ab) row.getCell(c.ab).value = na;
-                    if (c.wd) { tgt.base = tgt.base || {}; if (!(r in tgt.base)) tgt.base[r] = Number(val(row.getCell(c.wd))); const b = tgt.base[r]; row.getCell(c.wd).value = (isNaN(b) || !b ? 30 : b) - na }
-                    if (c.rm) row.getCell(c.rm).value = 'Absent on ' + e.abs.join(', ') + ' ' + mon + ' ' + yr;
-                }
-                if (ot && c.ot) row.getCell(c.ot).value = ot;
-                row.commit && 0;
-                rows.push({ key, name: txt(tgt.ws.getRow(r).getCell(c.iq + 1)), na, ot, days: e.abs.join(', ') });
-            }
-            S.out = true;
-            const unused = [...map.entries()].filter(([k]) => !used.has(k));
-            const old = tgt.wb.getWorksheet('Not in Target'); if (old) tgt.wb.removeWorksheet(old.id);
-            if (unused.length) {
-                const ns = tgt.wb.addWorksheet('Not in Target');
-                ns.columns = [{ header: 'S.No', width: 7 }, { header: 'Name', width: 34 }, { header: 'Iqama', width: 16 }, { header: 'Position', width: 28 }, { header: 'Absent', width: 10 }, { header: 'Over Time', width: 12 }, { header: 'Remarks', width: 42 }];
-                ns.getRow(1).font = { bold: true }; ns.getRow(1).alignment = { horizontal: 'center' };
-                unused.forEach(([k, e], i) => ns.addRow([i + 1, e.name, Number(k), e.pos, e.abs.length || '', Math.round(e.ot * 100) / 100 || '', e.abs.length ? 'Absent on ' + e.abs.join(', ') + ' ' + mon + ' ' + yr : '']));
-            }
-            let h = '<span class="ok">Matched ' + used.size + ' employee(s). ' + rows.filter(r => r.na).length + ' with absences, ' + rows.filter(r => r.ot).length + ' with overtime.</span>';
-            if (unused.length) h += '<br><span class="er">' + unused.length + ' employee(s) in the source were not found in the target: ' + unused.map(([k, e]) => (e.name || '') + ' (' + k + ')').join(', ') + '. They are listed in a new sheet called &quot;Not in Target&quot; in the downloaded file.</span>';
-            if (missing.length) h += '<br><span class="er">' + missing.length + ' in the target had no match in the source and were left as is.</span>';
-            $('msg').innerHTML = h;
-            const esc = s => String(s).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-            $('prev').innerHTML = '<table><thead><tr><th>Iqama</th><th>Absent days</th><th>Absent dates</th><th>Overtime hrs</th></tr></thead><tbody>' +
-                rows.map(r => '<tr><td>' + r.key + '</td><td>' + (r.na || '') + '</td><td>' + esc(r.days) + '</td><td>' + (r.ot || '') + '</td></tr>').join('') + '</tbody></table>' + (unused.length ? '<p class="hint" style="margin:12px 10px 4px">Not in target (goes to the "Not in Target" sheet)</p><table><thead><tr><th>Name</th><th>Iqama</th><th>Absent days</th><th>Absent dates</th><th>Overtime hrs</th></tr></thead><tbody>' + unused.map(([k, e]) => '<tr><td>' + esc(e.name) + '</td><td>' + k + '</td><td>' + (e.abs.length || '') + '</td><td>' + esc(e.abs.join(', ')) + '</td><td>' + (Math.round(e.ot * 100) / 100 || '') + '</td></tr>').join('') + '</tbody></table>' : '');
-            $('prev').classList.remove('hid'); $('dl').classList.remove('hid');
-        };
+$('go').onclick=()=>{
+  const {src,tgt}=S;
+  const code=$('acode').value.trim().toLowerCase(),std=parseFloat($('std').value)||8,mon=$('mon').value.trim(),yr=$('yr').value.trim();
+  const hc=re=>{let x=0;src.ws.getRow(src.h.r).eachCell((c,n)=>{if(!x&&re.test(txt(c)))x=n});return x};
+  const nameCol=hc(/^name/i),posCol=hc(/^position/i);
+  const map=new Map();
+  for(let r=src.h.r+1;r<=src.ws.rowCount;r++){
+    const row=src.ws.getRow(r),key=digits(val(row.getCell(src.h.iq)));if(!key)continue;
+    const e={abs:[],ot:0,name:nameCol?txt(row.getCell(nameCol)):'',pos:posCol?txt(row.getCell(posCol)):''};
+    src.dates.forEach(({n,d})=>{
+      const v=val(row.getCell(n)),s=String(v??'').trim().toLowerCase();
+      if(s===code)e.abs.push(d);
+      else{const x=typeof v==='number'?v:parseFloat(s);if(!isNaN(x)&&x>std)e.ot+=x-std}
+    });
+    map.set(key,e);
+  }
+  const c={iq:+$('iqT').value,ab:+$('abT').value,ot:+$('otT').value,wd:+$('wdT').value,rm:+$('rmT').value};
+  const used=new Set(),rows=[],edits=[];let missing=0;
+  for(let r=tgt.h.r+1;r<=tgt.ws.rowCount;r++){
+    const row=tgt.ws.getRow(r),key=digits(val(row.getCell(c.iq)));if(!key)continue;
+    const e=map.get(key);if(!e){missing++;continue}
+    used.add(key);
+    const na=e.abs.length,ot=Math.round(e.ot*100)/100,days=e.abs.join(', ');
+    if(na){
+      if(c.ab)edits.push({r,col:c.ab,v:na});
+      if(c.wd){const b=Number(val(row.getCell(c.wd)));edits.push({r,col:c.wd,v:(isNaN(b)||!b?30:b)-na})}
+      if(c.rm)edits.push({r,col:c.rm,v:'Absent on '+days+' '+mon+' '+yr});
+    }
+    if(ot&&c.ot)edits.push({r,col:c.ot,v:ot});
+    rows.push({key,na,ot,days});
+  }
+  const nit=[...map.entries()].filter(([k])=>!used.has(k)).map(([k,e])=>({key:k,name:e.name,pos:e.pos,na:e.abs.length,ot:Math.round(e.ot*100)/100,days:e.abs.join(', ')}));
+  S.edits=edits;S.nit=nit;S.mon=mon;S.yr=yr;
+  let h='<span class="ok">Matched '+used.size+' employee(s). '+rows.filter(r=>r.na).length+' with absences, '+rows.filter(r=>r.ot).length+' with overtime.</span>';
+  if(nit.length)h+='<br><span class="er">'+nit.length+' employee(s) in the source were not found in the target: '+nit.map(e=>(e.name||'')+' ('+e.key+')').join(', ')+'. They are listed in a new sheet called &quot;Not in Target&quot; in the downloaded file.</span>';
+  if(missing)h+='<br><span class="er">'+missing+' in the target had no match in the source and were left as is.</span>';
+  $('msg').innerHTML=h;
+  const esc=s=>String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  $('prev').innerHTML='<table><thead><tr><th>Iqama</th><th>Absent days</th><th>Absent dates</th><th>Overtime hrs</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td>'+r.key+'</td><td>'+(r.na||'')+'</td><td>'+esc(r.days)+'</td><td>'+(r.ot||'')+'</td></tr>').join('')+'</tbody></table>'+
+    (nit.length?'<p class="hint" style="margin:12px 10px 4px">Not in target (goes to the &quot;Not in Target&quot; sheet)</p><table><thead><tr><th>Name</th><th>Iqama</th><th>Absent days</th><th>Absent dates</th><th>Overtime hrs</th></tr></thead><tbody>'+nit.map(e=>'<tr><td>'+esc(e.name)+'</td><td>'+e.key+'</td><td>'+(e.na||'')+'</td><td>'+esc(e.days)+'</td><td>'+(e.ot||'')+'</td></tr>').join('')+'</tbody></table>':'');
+  $('prev').classList.remove('hid');$('dl').classList.remove('hid');
+};
 
-        $('dl').onclick = async () => {
-            const { tgt } = S;
-            const buf = await tgt.wb.xlsx.writeBuffer();
-            const name = tgt.name.replace(/\.[^.]+$/, '') + '_filled.xlsx';
-            const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-            document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        };
-    </script>
+$('dl').onclick=async()=>{
+  const {tgt}=S;
+  try{
+    const buf=await buildWorkbook(tgt.buf.slice(0),S.edits,S.nit,S.mon,S.yr);
+    const name=tgt.name.replace(/\.[^.]+$/,'')+'_filled.xlsx';
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));a.download=name;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }catch(e){if(e&&e.code!=='declined')$('msg').innerHTML+='<br><span class="er">Could not save the file ('+(e.code||e.message||'error')+').</span>'}
+};
+</script>
 </body>
-
 </html>
